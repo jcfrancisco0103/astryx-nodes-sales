@@ -8,6 +8,9 @@ function Home() {
   const [vpsCost, setVpsCost] = useState(0);
   const [panelCost, setPanelCost] = useState(0);
   const [netProfit, setNetProfit] = useState(0);
+  const [ownerSalary, setOwnerSalary] = useState(0);
+  const [developerSalary, setDeveloperSalary] = useState(0);
+  const [advertiserSalary, setAdvertiserSalary] = useState(0);
 
   useEffect(() => {
     const sales = getSales();
@@ -21,7 +24,13 @@ function Home() {
     
     setVpsCost(vps);
     setPanelCost(panel);
-    setNetProfit(total - vps - panel);
+    const profit = total - vps - panel;
+    setNetProfit(profit);
+    
+    // Calculate salaries (30%, 30%, 20%)
+    setOwnerSalary(profit * 0.30);
+    setDeveloperSalary(profit * 0.30);
+    setAdvertiserSalary(profit * 0.20);
     
     // Initialize settings if not set
     if (!localStorage.getItem('astryxSettings')) {
@@ -44,7 +53,13 @@ function Home() {
       
       setVpsCost(vps);
       setPanelCost(panel);
-      setNetProfit(total - vps - panel);
+      const profit = total - vps - panel;
+      setNetProfit(profit);
+      
+      // Calculate salaries (30%, 30%, 20%)
+      setOwnerSalary(profit * 0.30);
+      setDeveloperSalary(profit * 0.30);
+      setAdvertiserSalary(profit * 0.20);
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -134,40 +149,49 @@ function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <h2>Cost Settings</h2>
-          <div className="settings-form">
-            <div className="input-group">
-              <label>VPS Cost ($)</label>
-              <input
-                type="number"
-                value={vpsCost}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  setVpsCost(value);
-                  const settings = getSettings();
-                  settings.vpsCost = value;
-                  localStorage.setItem('astryxSettings', JSON.stringify(settings));
-                  setNetProfit(totalSales - value - panelCost);
-                }}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="input-group">
-              <label>Panel Cost ($)</label>
-              <input
-                type="number"
-                value={panelCost}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  setPanelCost(value);
-                  const settings = getSettings();
-                  settings.panelCost = value;
-                  localStorage.setItem('astryxSettings', JSON.stringify(settings));
-                  setNetProfit(totalSales - vpsCost - value);
-                }}
-                placeholder="0.00"
-              />
-            </div>
+          <h2>Salary Distribution</h2>
+          <div className="salary-grid">
+            <motion.div
+              className="salary-card"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              <div className="salary-icon">👑</div>
+              <div className="salary-content">
+                <h3>Owner</h3>
+                <p className="salary-percentage">30%</p>
+                <p className="salary-amount">${ownerSalary.toFixed(2)}</p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="salary-card"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.9 }}
+            >
+              <div className="salary-icon">💻</div>
+              <div className="salary-content">
+                <h3>Developer</h3>
+                <p className="salary-percentage">30%</p>
+                <p className="salary-amount">${developerSalary.toFixed(2)}</p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="salary-card"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.0 }}
+            >
+              <div className="salary-icon">📢</div>
+              <div className="salary-content">
+                <h3>Advertiser</h3>
+                <p className="salary-percentage">20%</p>
+                <p className="salary-amount">${advertiserSalary.toFixed(2)}</p>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>
