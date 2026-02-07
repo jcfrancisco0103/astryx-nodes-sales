@@ -16,12 +16,18 @@ function Home() {
     const total = sales.reduce((sum, sale) => sum + (parseFloat(sale.amount) || 0), 0);
     setTotalSales(total);
     
-    const vps = parseFloat(settings.vpsCost) || 0;
-    const panel = parseFloat(settings.panelCost) || 0;
+    const vps = parseFloat(settings.vpsCost) || 679;
+    const panel = parseFloat(settings.panelCost) || 6778;
     
     setVpsCost(vps);
     setPanelCost(panel);
     setNetProfit(total - vps - panel);
+    
+    // Initialize settings if not set
+    if (!localStorage.getItem('astryxSettings')) {
+      const defaultSettings = { vpsCost: 679, panelCost: 6778 };
+      localStorage.setItem('astryxSettings', JSON.stringify(defaultSettings));
+    }
   }, []);
 
   // Listen for storage changes
@@ -33,8 +39,8 @@ function Home() {
       const total = sales.reduce((sum, sale) => sum + (parseFloat(sale.amount) || 0), 0);
       setTotalSales(total);
       
-      const vps = parseFloat(settings.vpsCost) || 0;
-      const panel = parseFloat(settings.panelCost) || 0;
+      const vps = parseFloat(settings.vpsCost) || 679;
+      const panel = parseFloat(settings.panelCost) || 6778;
       
       setVpsCost(vps);
       setPanelCost(panel);

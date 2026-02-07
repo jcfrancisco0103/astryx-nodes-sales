@@ -31,9 +31,17 @@ export const deleteSale = (id) => {
 export const getSettings = () => {
   try {
     const settings = localStorage.getItem('astryxSettings');
-    return settings ? JSON.parse(settings) : { vpsCost: 0, panelCost: 0 };
+    if (settings) {
+      const parsed = JSON.parse(settings);
+      // Ensure defaults are set if not present
+      return {
+        vpsCost: parsed.vpsCost !== undefined ? parsed.vpsCost : 679,
+        panelCost: parsed.panelCost !== undefined ? parsed.panelCost : 6778,
+      };
+    }
+    return { vpsCost: 679, panelCost: 6778 };
   } catch (error) {
     console.error('Error loading settings:', error);
-    return { vpsCost: 0, panelCost: 0 };
+    return { vpsCost: 679, panelCost: 6778 };
   }
 };

@@ -81,6 +81,7 @@ function AddSaleModal({ onClose, onSave }) {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [customerName, setCustomerName] = useState('');
   const [dateBought, setDateBought] = useState(new Date().toISOString().split('T')[0]);
+  const [duration, setDuration] = useState('');
   const [dateExpiration, setDateExpiration] = useState('');
   const [amount, setAmount] = useState('');
   const [customRam, setCustomRam] = useState('');
@@ -93,6 +94,45 @@ function AddSaleModal({ onClose, onSave }) {
       setCustomRam('');
       setCustomCpu('');
       setCustomDisk('');
+    }
+  };
+
+  const calculateExpiryDate = (startDate, durationMonths) => {
+    if (!startDate || !durationMonths) return '';
+    const date = new Date(startDate);
+    date.setMonth(date.getMonth() + durationMonths);
+    return date.toISOString().split('T')[0];
+  };
+
+  const handleDurationChange = (e) => {
+    const selectedDuration = e.target.value;
+    setDuration(selectedDuration);
+    
+    if (selectedDuration && dateBought) {
+      let months = 0;
+      if (selectedDuration === '1 month') months = 1;
+      else if (selectedDuration === '6 Months') months = 6;
+      else if (selectedDuration === '12 Months') months = 12;
+      
+      const expiryDate = calculateExpiryDate(dateBought, months);
+      setDateExpiration(expiryDate);
+    } else {
+      setDateExpiration('');
+    }
+  };
+
+  const handleDateBoughtChange = (e) => {
+    const newDate = e.target.value;
+    setDateBought(newDate);
+    
+    if (duration && newDate) {
+      let months = 0;
+      if (duration === '1 month') months = 1;
+      else if (duration === '6 Months') months = 6;
+      else if (duration === '12 Months') months = 12;
+      
+      const expiryDate = calculateExpiryDate(newDate, months);
+      setDateExpiration(expiryDate);
     }
   };
 
@@ -114,8 +154,13 @@ function AddSaleModal({ onClose, onSave }) {
       return;
     }
 
+    if (!duration) {
+      alert('Please select a duration');
+      return;
+    }
+
     if (!dateExpiration) {
-      alert('Please select expiration date');
+      alert('Please ensure expiration date is calculated');
       return;
     }
 
@@ -156,6 +201,7 @@ function AddSaleModal({ onClose, onSave }) {
     setSelectedPlan(null);
     setCustomerName('');
     setDateBought(new Date().toISOString().split('T')[0]);
+    setDuration('');
     setDateExpiration('');
     setAmount('');
     setCustomRam('');
@@ -295,22 +341,45 @@ function AddSaleModal({ onClose, onSave }) {
                 <input
                   type="date"
                   value={dateBought}
-                  onChange={(e) => setDateBought(e.target.value)}
+                  onChange={handleDateBoughtChange}
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label>Date Expiration *</label>
-                <input
-                  type="date"
-                  value={dateExpiration}
-                  onChange={(e) => setDateExpiration(e.target.value)}
-                  min={dateBought}
+                <label>Duration *</label>
+                <select
+                  value={duration}
+                  onChange={handleDurationChange}
                   required
-                />
+                >
+                  <option value="">Select duration</option>
+                  <option value="1 month">1 month</option>
+                  <option value="6 Months">6 Months</option>
+                  <option value="12 Months">12 Months</option>
+                </select>
               </div>
             </div>
+
+            {dateExpiration && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="form-group"
+              >
+                <label>Date Expiry</label>
+                <input
+                  type="text"
+                  value={new Date(dateExpiration).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                  readOnly
+                  className="expiry-display"
+                />
+              </motion.div>
+            )}
 
             <div className="form-group">
               <label>Amount ($) *</label>
